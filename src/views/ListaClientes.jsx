@@ -109,34 +109,26 @@ function ListaClientes() {
 
         <tbody>
           {clientesFiltrados.map((cliente) => (
-
             <tr key={cliente.id}>
               <td>{cliente.id}</td>
-
               <td>
                 {cliente.name.firstname}{" "}
                 {cliente.name.lastname}
               </td>
-
               <td>{cliente.email}</td>
               <td>{cliente.phone}</td>
               <td>{cliente.address.city}</td>
-
               <td>
-                <Button
-                  as={Link}
-                  to={`/clientes/${cliente.id}`}
+                <Button as={Link} to={`/clientes/${cliente.id}`}
                   variant="primary"
                   size="sm"
                 >
                   Ver Ficha Completa
                 </Button>
               </td>
-
             </tr>
           ))}
         </tbody>
-
       </Table>
     </Container>
   );
