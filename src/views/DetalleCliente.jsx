@@ -1,73 +1,95 @@
-import React from 'react';
-import { Container, Row, Col, Card, ListGroup } from 'react-bootstrap';
 
-
-const clienteSimulado = {
-  id: 1,
-  username: "johnd",
-  password: "m38rmF$()",
-  name: { firstname: "John", lastname: "Doe" },
-  address: {
-    city: "San Salvador de Jujuy",
-    street: "Av. Martiarena",
-    number: 1022,
-    zipcode: "4600"
-  }
-};
+import { useEffect, useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import { Container, Card, Spinner, Alert, Button } from "react-bootstrap";
 
 const DetalleCliente = () => {
-  const cliente = clienteSimulado;
+  //Capturamos el ID usando useParams
+  const {id} = useParams();
+  const [cliente, setCliente] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  if (!cliente) {
+  //useEffect para la búsqueda cuando el componente se monte
+  useEffect(() => {
+    obtenerDetalleCliente();
+  }, [id]);
+
+  const obtenerDetalleCliente = async () => {
+    try {
+      setLoading(true);
+      setError(false);
+
+      const response = await fetch(`https://fakestoreapi.com/users/${id}`);
+
+      if (!response.ok) {
+        throw new Error("Error al obtener los datos del cliente");
+      }
+
+      const data = await response.json();
+      setCliente(data);
+    } catch (err) {
+      console.error(err);
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  //Estado de Carga
+  if (loading) {
     return (
-      <Container className="mt-4">
-        <p>Cargando información del cliente...</p>
+      <Container className="mt-5 text-center">
+        <Spinner animation="border" variant="primary" />
+        <p className="mt-2">Cargando ficha del cliente...</p>
       </Container>
     );
   }
 
-  const { username, password, address } = cliente;
-  const { street, number, zipcode, city } = address || {};
+  // Estado de Error
+  if (error || !cliente) {
+    return (
+      <Container className="mt-5">
+        <Alert variant="danger">
+          No se pudo cargar el detalle del cliente especificado o no existe.
+        </Alert>
+        <Button as={Link} to="/clientes" variant="secondary">
+          Volver a la lista
+        </Button>
+      </Container>
+    );
+  }
 
+  //Renderizado
   return (
     <Container className="mt-4">
-      <Row className="justify-content-center">
-        <Col md={8}>
-          <Card className="shadow-sm border-0">
-            <Card.Header className="bg-primary text-white py-3">
-              <h4 className="mb-0">Ficha Profunda del Cliente</h4>
-            </Card.Header>
-            <Card.Body className="p-4">
-              
-              <h5 className="text-secondary border-bottom pb-2 mb-3">Dirección Completa</h5>
-              <ListGroup variant="flush" className="mb-4">
-                <ListGroup.Item><strong>Calle:</strong> {street}</ListGroup.Item>
-                <ListGroup.Item><strong>Número:</strong> {number}</ListGroup.Item>
-                <ListGroup.Item><strong>Código Postal:</strong> {zipcode}</ListGroup.Item>
-                <ListGroup.Item><strong>Ciudad:</strong> {city}</ListGroup.Item>
-              </ListGroup>
+      <h2 className="mb-4">Ficha del Cliente N°{id}</h2>
 
-              <h5 className="text-secondary border-bottom pb-2 mb-3">Credenciales de Acceso</h5>
-              <Card className="bg-light border-0">
-                <Card.Body>
-                  <p className="mb-2">
-                    <strong>Usuario (username):</strong> <code className="text-dark fs-6">{username}</code>
-                  </p>
-                  <p className="mb-0">
-                    <strong>Contraseña (password):</strong> <code className="text-danger fs-6">{password}</code>
-                  </p>
-                </Card.Body>
-              </Card>
-
-
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
+      <Card className="shadow-sm">
+        <Card.Body>
+          <Card.Title className="mb-3">
+            {cliente.name?.firstname} {cliente.name?.lastname}
+          </Card.Title>
+          <Card.Text>
+            <strong>Email:</strong> {cliente.email}
+          </Card.Text>
+          <Card.Text>
+            <strong>Teléfono:</strong> {cliente.phone}
+          </Card.Text>
+          
+          <hr />
+          <p className="text-muted">
+            Modulo D Inciso 2.
+          </p>
+        </Card.Body>
+        <Card.Footer>
+          <Button as={Link} to="/clientes" variant="secondary" size="sm">
+            Volver a la lista
+          </Button>
+        </Card.Footer>
+      </Card>
     </Container>
   );
 };
 
 export default DetalleCliente;
-
-//cambio (ignorar)
