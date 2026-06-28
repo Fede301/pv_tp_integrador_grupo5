@@ -8,6 +8,7 @@ import {
   Button
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import FormularioCliente from "../components/FormularioCliente";
 
 function ListaClientes() {
 
@@ -15,6 +16,7 @@ function ListaClientes() {
   const [busqueda, setBusqueda] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [mostrarFormulario, setMostrarFormulario] = useState(false);
 
   useEffect(() => {
     obtenerClientes();
@@ -86,13 +88,17 @@ function ListaClientes() {
         Lista de Clientes
       </h2>
 
-      <Form.Control
-        type="text"
-        placeholder="Buscar por apellido o ciudad..."
-        className="mb-3"
-        value={busqueda}
-        onChange={(e) => setBusqueda(e.target.value)}
-      />
+      <div className="d-flex gap-2 align-items-start">
+        <Form.Control
+          type="text"
+          placeholder="Buscar por apellido o ciudad..."
+          className="mb-3"
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+        />
+        <Button variant="success" className="text-nowrap" onClick={() => setMostrarFormulario(true)}>Agregar +</Button>
+        <FormularioCliente show={mostrarFormulario} onHide={() => setMostrarFormulario(false)}/>
+      </div>
 
       <Table striped bordered hover responsive>
 
