@@ -1,16 +1,20 @@
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react"; // 1. Importamos useContext
 import { useParams, Link } from "react-router-dom";
 import { Container, Card, Spinner, Alert, Button } from "react-bootstrap";
 
+import { AdminContext } from "../context/AdminContext";
+import { useNavigate } from "react-router-dom";
 const DetalleCliente = () => {
-  //Capturamos el ID usando useParams
-  const {id} = useParams();
+  const { id } = useParams();
   const [cliente, setCliente] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
-  //useEffect para la búsqueda cuando el componente se monte
+
+  const { admin } = useContext(AdminContext);
+  console.log("Datos del administrador desde el contexto:", admin);
+  const navigate = useNavigate();
   useEffect(() => {
     obtenerDetalleCliente();
   }, [id]);
@@ -19,7 +23,6 @@ const DetalleCliente = () => {
     try {
       setLoading(true);
       setError(false);
-
       const response = await fetch(`https://fakestoreapi.com/users/${id}`);
 
       if (!response.ok) {
@@ -36,7 +39,26 @@ const DetalleCliente = () => {
     }
   };
 
-  //Estado de Carga
+  const handleEliminarCliente = async () => {
+    const confirmar = window.confirm(`¿Estás seguro de eliminar al cliente N°${id}?`);
+    if (!confirmar) return;
+
+    try {
+      const response = await fetch(`https://fakestoreapi.com/users/${id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        alert("Cliente eliminado con éxito.");
+        navigate("/clientes")
+      } else {
+        alert("Hubo un error al intentar eliminar el cliente.");
+      }
+    } catch (err) {
+      console.error("Error en la petición DELETE:", err);
+    }
+  };
+
   if (loading) {
     return (
       <Container className="mt-5 text-center">
@@ -46,7 +68,6 @@ const DetalleCliente = () => {
     );
   }
 
-  // Estado de Error
   if (error || !cliente) {
     return (
       <Container className="mt-5">
@@ -60,7 +81,6 @@ const DetalleCliente = () => {
     );
   }
 
-  //Renderizado
   return (
     <Container className="mt-4">
       <h2 className="mb-4">Ficha del Cliente N°{id}</h2>
@@ -76,11 +96,39 @@ const DetalleCliente = () => {
           <Card.Text>
             <strong>Teléfono:</strong> {cliente.phone}
           </Card.Text>
-          
+
           <hr />
-          <p className="text-muted">
-            Modulo D Inciso 2.
-          </p>
+
+
+          <h5 className="text-primary">Dirección Completa</h5>
+          <Card.Text>
+            <strong>Calle:</strong> {cliente.address?.street} <br />
+            <strong>Número:</strong> {cliente.address?.number} <br />
+            <strong>Código Postal:</strong> {cliente.address?.zipcode} <br />
+            <strong>Ciudad:</strong> {cliente.address?.city}
+          </Card.Text>
+
+          <h5 className="text-primary mt-3">Credenciales de Acceso</h5>
+          <Card.Text>
+            <strong>Usuario:</strong> {cliente.username} <br />
+            <strong>Contraseña:</strong> {cliente.password}
+          </Card.Text>
+
+
+          {admin?.sector === "Gerencia" && (
+            <>
+              <hr />
+              <div className="d-grid gap-2 d-md-flex justify-content-md-end">
+                <Button
+                  variant="danger"
+                  onClick={handleEliminarCliente}
+                >
+                  Eliminar Cliente de la Base de Datos
+                </Button>
+              </div>
+            </>
+          )}
+
         </Card.Body>
         <Card.Footer>
           <Button as={Link} to="/clientes" variant="secondary" size="sm">
