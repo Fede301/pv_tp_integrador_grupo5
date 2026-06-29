@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AdminContext } from '../../context/AdminContext';
 
 const Header = () => {
@@ -17,9 +17,11 @@ const Header = () => {
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-4 shadow-sm">
             <div className="container-fluid">
                 {/* 1. CAMBIO: Nombre de la app con estilo personalizado */}
-                <span className="navbar-brand fw-bold text-uppercase tracking-wider">
-                    Panel<span className="text-info">Clientes</span>
-                </span>
+                <Link to="dashboard" className='link-dark'>
+                    <span className="navbar-brand fw-bold text-uppercase tracking-wider">
+                        Panel<span className="text-info">Clientes</span>
+                    </span>
+                </Link>
 
                 <div className="d-flex align-items-center ms-auto">
                     <div className="text-light me-4 text-end">

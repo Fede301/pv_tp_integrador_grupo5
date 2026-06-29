@@ -84,6 +84,7 @@ const Dashboard = () => {
             <Button
                 variant="outline-primary"
                 size="lg"
+                className='mt-4'
                 onClick={() => navigate('/clientes')}
             >
                 Ver Clientes →
